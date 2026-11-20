@@ -33,8 +33,6 @@
       max-width: 1240px;
       margin: 0 auto;
       padding: 20px;
-      position: relative;
-      z-index: 1;
     }
     .topbar {
       background: var(--card);
@@ -48,8 +46,6 @@
       gap: 12px;
       margin-bottom: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-      position: relative;
-      z-index: 10;
     }
     .brand h1 {
       margin: 0;
@@ -66,8 +62,6 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
-      position: relative;
-      z-index: 20;
     }
     .badge {
       padding: 6px 12px;
@@ -84,7 +78,6 @@
     button, input, select {
       font-family: inherit;
       font-size: 0.95rem;
-      position: relative;
     }
     button {
       cursor: pointer;
@@ -93,8 +86,6 @@
       color: var(--text);
       padding: 8px 14px;
       border-radius: 8px;
-      transition: 0.15s ease;
-      pointer-events: auto;
     }
     button:hover { background: #f8fafc; }
     button.primary {
@@ -132,7 +123,6 @@
       color: var(--text);
       width: 100%;
       min-height: 40px;
-      pointer-events: auto;
     }
     .card {
       background: var(--card);
@@ -141,8 +131,6 @@
       padding: 18px 20px;
       margin-bottom: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-      position: relative;
-      z-index: 5;
     }
     .card-title {
       margin: 0 0 14px;
@@ -312,7 +300,7 @@
       padding: 16px;
     }
     .modal-backdrop.show {
-      display: flex !important;
+      display: flex;
     }
     .modal {
       background: #fff;
@@ -321,8 +309,6 @@
       width: 100%;
       max-width: 380px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      position: relative;
-      z-index: 100000;
     }
     .modal h3 { margin: 0 0 8px; }
     .modal p { margin: 0 0 12px; font-size: 0.88rem; color: var(--muted); }
@@ -332,7 +318,7 @@
       gap: 8px;
       margin-top: 14px;
     }
-    .hidden { display: none !important; }
+    .hidden { display: none; }
     .inline-edit-row {
       display: inline-flex;
       gap: 6px;
@@ -363,10 +349,8 @@
 
     <div id="globalFeedback" class="alert"></div>
 
-    <!-- โหมดครูคณิต -->
     <section id="teacherPanel" class="card hidden">
       <h2 class="card-title">โหมดครูคณิต - ลงตารางนิเทศของตนเอง</h2>
-
       <div class="grid-form">
         <div class="field">
           <label for="entryTeacherSelect">เลือกชื่อครูผู้รับการนิเทศ</label>
@@ -427,4 +411,505 @@
           <button type="button" class="primary" id="saveTeacherScheduleBtn">บันทึกลงตารางนิเทศ</button>
         </div>
       </div>
-      <div id="clashAlert" class="alert warn
+      <div id="clashAlert" class="alert warn"></div>
+    </section>
+
+    <section id="adminPanel" class="card hidden">
+      <h2 class="card-title">
+        <span>โหมดแอดมิน - เพิ่ม/ลบรายชื่อครูคณิต ผู้นิเทศ และแก้ไขหัวตาราง</span>
+        <button type="button" class="secondary" id="syncAllBtn">ซิงก์ข้อมูลทั้งหมดขึ้น Google Sheets</button>
+      </h2>
+
+      <div class="grid-admin-rosters" style="margin-bottom:14px;">
+        <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#f8fafc;">
+          <div style="font-weight:700; margin-bottom:8px;">รายชื่อครูคณิต (<span id="adminTeacherCount">0</span> คน)</div>
+          <div style="display:flex; gap:6px; margin-bottom:8px;">
+            <input type="text" id="adminTeacherInput" placeholder="พิมพ์ชื่อ-สกุลครูคณิต" />
+            <button type="button" class="primary" id="adminAddTeacherBtn">เพิ่ม</button>
+          </div>
+          <input type="file" id="adminTeacherFileInput" accept=".csv,.txt" />
+          <div id="adminTeacherList" class="roster-list"></div>
+        </div>
+
+        <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#f8fafc;">
+          <div style="font-weight:700; margin-bottom:8px;">รายชื่อครูผู้นิเทศ (<span id="adminSupervisorCount">0</span> คน)</div>
+          <div style="display:flex; gap:6px; margin-bottom:8px;">
+            <input type="text" id="adminSupervisorInput" placeholder="พิมพ์ชื่อ-สกุลครูผู้นิเทศ" />
+            <button type="button" class="primary" id="adminAddSupervisorBtn">เพิ่ม</button>
+          </div>
+          <div id="adminSupervisorList" class="roster-list"></div>
+        </div>
+      </div>
+
+      <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#f8fafc;">
+        <div style="font-weight:700; margin-bottom:8px;">แก้ไขหัวตารางนิเทศ</div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <input type="text" id="adminTableTitleInput" style="flex:1; min-width:260px;" />
+          <button type="button" class="primary" id="saveAdminTitleBtn">บันทึกหัวตาราง</button>
+          <button type="button" id="resetAdminTitleBtn">คืนค่าหัวตารางเริ่มต้น</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" id="searchInput" placeholder="ค้นหาชื่อครู วัน/เดือน/ปี ห้อง หรือผู้นิเทศ..." style="width:260px;" />
+          <select id="filterSupervisorSelect" style="width:210px;">
+            <option value="">ครูผู้นิเทศทั้งหมด</option>
+          </select>
+        </div>
+        <div class="toolbar-right">
+          <button type="button" class="primary" id="exportExcelBtn">ส่งออกไฟล์ Excel (.xls)</button>
+          <button type="button" id="exportCsvBtn">ส่งออกไฟล์ CSV</button>
+          <button type="button" id="printTableBtn">พิมพ์ตาราง</button>
+        </div>
+      </div>
+
+      <div class="table-header-wrap">
+        <div id="tableDisplayBox" class="table-title-display">
+          <h2 id="tableDisplayTitle">ตารางนิเทศการสอนครั้งที่ 1 (15 มิถุนายน 2569 - 24 กรกฎาคม 2569)</h2>
+          <button type="button" id="inlineEditTitleBtn" class="hidden">แก้ไขหัวตาราง</button>
+        </div>
+        <div id="inlineEditTitleBox" class="inline-edit-row hidden" style="justify-content:center; margin-top:6px;">
+          <input type="text" id="inlineTitleInput" />
+          <button type="button" class="primary" id="saveInlineTitleBtn">บันทึก</button>
+          <button type="button" id="cancelInlineTitleBtn">ยกเลิก</button>
+        </div>
+        <p id="tableSummaryMeta" class="table-sub"></p>
+      </div>
+
+      <div class="table-wrap">
+        <table id="supervisionTable">
+          <thead>
+            <tr>
+              <th style="width:60px;">ที่</th>
+              <th colspan="2">ชื่อ-สกุล</th>
+              <th style="width:170px;">วัน/เดือน/ปี</th>
+              <th style="width:90px;">คาบ</th>
+              <th style="width:130px;">ชั้น</th>
+              <th style="width:110px;">ห้อง</th>
+              <th>ครูผู้นิเทศ</th>
+              <th id="actionColHeader" class="hidden" style="width:100px;">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="supervisionTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal">
+      <h3 id="authModalTitle">เข้าสู่ระบบ</h3>
+      <p id="authModalDesc">กรุณากรอกรหัสผ่านเพื่อเข้าใช้งาน</p>
+      <input type="password" id="authPasscodeInput" placeholder="กรอกรหัสผ่าน..." />
+      <div id="authErrorMsg" class="alert error"></div>
+      <div class="modal-actions">
+        <button type="button" id="cancelAuthBtn">ยกเลิก</button>
+        <button type="button" class="primary" id="confirmAuthBtn">ยืนยัน</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi5OEscQmM1NGP2eY9fhK28JpHJk0bgJu5qqxU6Q0YqU7JDaj_o3b7RvVa1oIOeQCu-Q/exec';
+    const MODE_PASSCODES = { teacher: 'math1234', admin: 'adminmath' };
+    const DEFAULT_TABLE_TITLE = 'ตารางนิเทศการสอนครั้งที่ 1 (15 มิถุนายน 2569 - 24 กรกฎาคม 2569)';
+    const THAI_MONTHS = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+    const EN_MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+
+    const INITIAL_SCHEDULES = [
+      { id: '1', fullName: 'นายสุขชัย เฉลิมผลวงศ์กุล', firstName: 'นายสุขชัย', lastName: 'เฉลิมผลวงศ์กุล', dateIso: '2026-07-16', dateThai: '16 กรกฎาคม 2569', period: '1-2', grade: 'ม.6', room: '213', supervisor: 'นางอำภา ธนะปาน' },
+      { id: '2', fullName: 'นายสมชาย ซอแอ', firstName: 'นายสมชาย', lastName: 'ซอแอ', dateIso: '2026-06-25', dateThai: '25 มิถุนายน 2569', period: '6-7', grade: 'ม.5', room: '333', supervisor: 'นายสุขชัย เฉลิมผลวงศ์กุล' },
+      { id: '3', fullName: 'นายกสิน เขียวแก้ว', firstName: 'นายกสิน', lastName: 'เขียวแก้ว', dateIso: '2026-06-17', dateThai: '17 มิถุนายน 2569', period: '2', grade: 'ม.2', room: '435', supervisor: 'นางศรุตา เฉลิมผลวงศ์กุล' },
+      { id: '4', fullName: 'นายจักรพันธ์ แสงเฮ่อ', firstName: 'นายจักรพันธ์', lastName: 'แสงเฮ่อ', dateIso: '2026-06-23', dateThai: '23 มิถุนายน 2569', period: '2', grade: 'ม.3', room: '443', supervisor: 'นายสมชาย ซอแอ' },
+      { id: '5', fullName: 'นายชุณหวิทย์ มงคล', firstName: 'นายชุณหวิทย์', lastName: 'มงคล', dateIso: '2026-07-17', dateThai: '17 กรกฎาคม 2569', period: '3', grade: 'ม.5', room: '335', supervisor: 'นางกรุณา สมบูรณ์' },
+      { id: '6', fullName: 'นายภานุพงศ์ แก้วบุญเรือง', firstName: 'นายภานุพงศ์', lastName: 'แก้วบุญเรือง', dateIso: '2026-06-17', dateThai: '17 มิถุนายน 2569', period: '2', grade: 'ม.1', room: '423', supervisor: 'นายสมชาย ซอแอ' },
+      { id: '7', fullName: 'นางกรุณา สมบูรณ์', firstName: 'นางกรุณา', lastName: 'สมบูรณ์', dateIso: '2026-06-30', dateThai: '30 มิถุนายน 2569', period: '1-2', grade: 'ม.4', room: '213', supervisor: 'นายสมชาย ซอแอ' },
+      { id: '8', fullName: 'นางศรุตา เฉลิมผลวงศ์กุล', firstName: 'นางศรุตา', lastName: 'เฉลิมผลวงศ์กุล', dateIso: '2026-07-06', dateThai: '6 กรกฎาคม 2569', period: '3', grade: 'ม.1', room: '438', supervisor: 'นางกรุณา สมบูรณ์' },
+      { id: '9', fullName: 'นางอำภา ธนะปาน', firstName: 'นางอำภา', lastName: 'ธนะปาน', dateIso: '2026-06-25', dateThai: '25 มิถุนายน 2569', period: '3-4', grade: 'ม.6', room: '211', supervisor: 'นางศรุตา เฉลิมผลวงศ์กุล' },
+      { id: '10', fullName: 'นางสาวภาวิณี ต้ออาษา', firstName: 'นางสาวภาวิณี', lastName: 'ต้ออาษา', dateIso: '2026-06-19', dateThai: '19 มิถุนายน 2569', period: '2', grade: 'ม.2', room: '435', supervisor: 'นายสุขชัย เฉลิมผลวงศ์กุล' },
+      { id: '11', fullName: 'นางสาวบุษกร จิณะไชย', firstName: 'นางสาวบุษกร', lastName: 'จิณะไชย', dateIso: '2026-06-15', dateThai: '15 มิถุนายน 2569', period: '6', grade: 'ม.1', room: '426', supervisor: 'นางศรุตา เฉลิมผลวงศ์กุล' },
+      { id: '12', fullName: 'นางสาวพรไพลิน ตาใฝ', firstName: 'นางสาวพรไพลิน', lastName: 'ตาใฝ', dateIso: '2026-06-24', dateThai: '24 มิถุนายน 2569', period: '3-4', grade: 'ม.4', room: '234', supervisor: 'นายสุขชัย เฉลิมผลวงศ์กุล' },
+      { id: '13', fullName: 'นางสาวกนิษฐา สิงห์อุตษา', firstName: 'นางสาวกนิษฐา', lastName: 'สิงห์อุตษา', dateIso: '2026-06-15', dateThai: '15 มิถุนายน 2569', period: '3', grade: 'ม.3', room: '441', supervisor: 'นางอำภา ธนะปาน' },
+      { id: '14', fullName: 'นางสาวพิมพิกา กุณาฝัน', firstName: 'นางสาวพิมพิกา', lastName: 'กุณาฝัน', dateIso: '2026-06-24', dateThai: '24 มิถุนายน 2569', period: '3', grade: 'ม.6', room: '216', supervisor: 'นางอำภา ธนะปาน' },
+      { id: '15', fullName: 'นางสาวศภนช มะณีศรี', firstName: 'นางสาวศภนช', lastName: 'มะณีศรี', dateIso: '2026-06-23', dateThai: '23 มิถุนายน 2569', period: '1', grade: 'ม.5', room: '337', supervisor: 'นางกรุณา สมบูรณ์' }
+    ];
+
+    const state = {
+      mode: 'guest',
+      pendingAuthMode: null,
+      tableTitle: DEFAULT_TABLE_TITLE,
+      schedules: INITIAL_SCHEDULES.slice(),
+      teachers: INITIAL_SCHEDULES.map(function (s) { return s.fullName; }),
+      supervisors: Array.from(new Set(INITIAL_SCHEDULES.map(function (s) { return s.supervisor; })))
+    };
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function splitFullName(fullName) {
+      const parts = String(fullName || '').trim().split(/\s+/);
+      if (parts.length <= 1) return { firstName: fullName || '', lastName: '' };
+      const lastName = parts.pop();
+      return { firstName: parts.join(' '), lastName: lastName };
+    }
+
+    function normalizeDateThai(rawVal) {
+      const s = String(rawVal || '').trim();
+      if (!s) return '';
+      const m = s.match(/^[A-Za-z]{3}\s+([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/);
+      if (m) {
+        const monthNum = EN_MONTHS[m[1]] || 1;
+        const dayNum = parseInt(m[2], 10);
+        let yearNum = parseInt(m[3], 10);
+        if (yearNum < 2400) yearNum += 543;
+        return dayNum + ' ' + THAI_MONTHS[monthNum] + ' ' + yearNum;
+      }
+      const d = new Date(s);
+      if (!isNaN(d.getTime()) && s.indexOf('GMT') !== -1) {
+        let yearBE = d.getFullYear();
+        if (yearBE < 2400) yearBE += 543;
+        return d.getDate() + ' ' + THAI_MONTHS[d.getMonth() + 1] + ' ' + yearBE;
+      }
+      return s;
+    }
+
+    function normalizePlainCell(rawVal) {
+      const s = String(rawVal == null ? '' : rawVal).trim();
+      if (!s) return '';
+      if (s.indexOf('GMT') !== -1) {
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) {
+          return d.getDate() + '-' + (d.getMonth() + 1);
+        }
+      }
+      return s;
+    }
+
+    function formatGradeDisplay(gradeVal, roomVal) {
+      const g = normalizePlainCell(gradeVal);
+      const r = normalizePlainCell(roomVal);
+      if (!g) return r;
+      if (g.indexOf('/') !== -1 && r && g.endsWith('/' + r)) {
+        return g.slice(0, -(r.length + 1));
+      }
+      return g;
+    }
+
+    function parseDateSortValue(item) {
+      const iso = String(item.dateIso || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+        const parts = iso.split('-').map(Number);
+        return new Date(parts[0], parts[1] - 1, parts[2]).getTime();
+      }
+      const thaiStr = normalizeDateThai(item.dateThai || iso);
+      const match = thaiStr.match(/(\d{1,2})\s+([ก-์]+)\s+(\d{4})/);
+      if (match) {
+        const day = parseInt(match[1], 10);
+        const monthIdx = THAI_MONTHS.indexOf(match[2]);
+        let year = parseInt(match[3], 10);
+        if (monthIdx > 0) {
+          if (year > 2400) year -= 543;
+          return new Date(year, monthIdx - 1, day).getTime();
+        }
+      }
+      const fallback = new Date(thaiStr);
+      return isNaN(fallback.getTime()) ? 9999999999999 : fallback.getTime();
+    }
+
+    function normalizeScheduleRow(raw, idx) {
+      const fullName = normalizePlainCell(raw.fullName || ((raw.firstName || '') + ' ' + (raw.lastName || '')));
+      const parts = splitFullName(fullName);
+      const firstName = normalizePlainCell(raw.firstName) || parts.firstName;
+      const lastName = normalizePlainCell(raw.lastName) || parts.lastName;
+      const dateThai = normalizeDateThai(raw.dateThai || raw.dateIso || '');
+      const period = normalizePlainCell(raw.period);
+      const room = normalizePlainCell(raw.room);
+      const grade = formatGradeDisplay(raw.grade, room);
+      const supervisor = normalizePlainCell(raw.supervisor);
+
+      return {
+        id: String(raw.id || (idx + 1)),
+        fullName: fullName,
+        firstName: firstName,
+        lastName: lastName,
+        dateIso: normalizePlainCell(raw.dateIso || ''),
+        dateThai: dateThai,
+        period: period,
+        grade: grade,
+        room: room,
+        supervisor: supervisor
+      };
+    }
+
+    function showFeedback(type, msg) {
+      const el = document.getElementById('globalFeedback');
+      if (!el) return;
+      el.className = 'alert show ' + type;
+      el.textContent = msg;
+      setTimeout(function () { el.className = 'alert'; }, 4500);
+    }
+
+    function openAuthModal(targetMode) {
+      state.pendingAuthMode = targetMode;
+      document.getElementById('authModalTitle').textContent =
+        targetMode === 'admin' ? 'เข้าสู่โหมดแอดมิน' : 'เข้าสู่โหมดครูคณิต';
+      document.getElementById('authModalDesc').textContent =
+        targetMode === 'admin'
+          ? 'กรุณากรอกรหัสผ่านแอดมิน (adminmath)'
+          : 'กรุณากรอกรหัสผ่านครูคณิต (math1234)';
+      const inp = document.getElementById('authPasscodeInput');
+      inp.value = '';
+      const err = document.getElementById('authErrorMsg');
+      err.className = 'alert error';
+      err.textContent = '';
+      document.getElementById('authModal').classList.add('show');
+      setTimeout(function () { inp.focus(); }, 30);
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').classList.remove('show');
+      state.pendingAuthMode = null;
+    }
+
+    function submitAuthModal() {
+      const code = document.getElementById('authPasscodeInput').value.trim();
+      const target = state.pendingAuthMode;
+      if (target && code === MODE_PASSCODES[target]) {
+        state.mode = target;
+        closeAuthModal();
+        applyMode();
+        showFeedback('success', target === 'admin' ? 'เข้าสู่โหมดแอดมินเรียบร้อยแล้ว' : 'เข้าสู่โหมดครูคณิตเรียบร้อยแล้ว');
+      } else {
+        const err = document.getElementById('authErrorMsg');
+        err.textContent = 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
+        err.className = 'alert error show';
+      }
+    }
+
+    function logoutMode() {
+      state.mode = 'guest';
+      applyMode();
+      showFeedback('success', 'ออกจากโหมดเรียบร้อยแล้ว');
+    }
+
+    function applyMode() {
+      const badge = document.getElementById('currentModeBadge');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const teacherPanel = document.getElementById('teacherPanel');
+      const adminPanel = document.getElementById('adminPanel');
+      const actionColHeader = document.getElementById('actionColHeader');
+      const inlineEditTitleBtn = document.getElementById('inlineEditTitleBtn');
+
+      teacherPanel.classList.add('hidden');
+      adminPanel.classList.add('hidden');
+      actionColHeader.classList.add('hidden');
+      inlineEditTitleBtn.classList.add('hidden');
+      logoutBtn.classList.add('hidden');
+      cancelInlineTitleEdit();
+
+      if (state.mode === 'teacher') {
+        badge.textContent = 'โหมด: ครูคณิต';
+        badge.className = 'badge';
+        teacherPanel.classList.remove('hidden');
+        actionColHeader.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        syncRosterSelectors();
+      } else if (state.mode === 'admin') {
+        badge.textContent = 'โหมด: แอดมิน';
+        badge.className = 'badge admin';
+        adminPanel.classList.remove('hidden');
+        actionColHeader.classList.remove('hidden');
+        inlineEditTitleBtn.classList.remove('hidden');
+        logoutBtn.classList.remove('hidden');
+        syncRosterSelectors();
+      } else {
+        badge.textContent = 'โหมด: ผู้เยี่ยมชม (ดูตาราง)';
+        badge.className = 'badge';
+      }
+      renderTable();
+    }
+
+    function postToGoogleSheet(payload) {
+      if (!APPS_SCRIPT_URL) return;
+      try {
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    async function fetchFromGoogleSheet(showToast) {
+      if (!APPS_SCRIPT_URL) return;
+      const statusEl = document.getElementById('syncStatusText');
+      try {
+        statusEl.textContent = 'กำลังดึงข้อมูลจาก Google Sheets ออนไลน์...';
+        const res = await fetch(APPS_SCRIPT_URL + '?t=' + Date.now(), { method: 'GET' });
+        const data = await res.json();
+        if (data && data.ok) {
+          if (data.tableTitle) state.tableTitle = normalizePlainCell(data.tableTitle);
+          if (Array.isArray(data.schedules) && data.schedules.length > 0) {
+            state.schedules = data.schedules.map(function (row, idx) { return normalizeScheduleRow(row, idx); });
+          }
+          if (Array.isArray(data.teachers) && data.teachers.length > 0) {
+            state.teachers = Array.from(new Set(data.teachers.map(function (s) { return normalizePlainCell(s); }).filter(Boolean)));
+          }
+          if (Array.isArray(data.supervisors) && data.supervisors.length > 0) {
+            state.supervisors = Array.from(new Set(data.supervisors.map(function (s) { return normalizePlainCell(s); }).filter(Boolean)));
+          }
+          syncAllUI();
+          statusEl.textContent = 'ออนไลน์ • เชื่อมต่อ Google Sheets เรียบร้อยแล้ว';
+          if (showToast) showFeedback('success', 'ดึงข้อมูลล่าสุดจาก Google Sheets เรียบร้อยแล้ว');
+        }
+      } catch (err) {
+        statusEl.textContent = 'พร้อมใช้งาน (ข้อมูลในเครื่อง)';
+        if (showToast) showFeedback('warn', 'ไม่สามารถดึงข้อมูลจาก Google Sheets ได้ชั่วคราว');
+      }
+    }
+
+    function addRosterName(role, rawName) {
+      const name = String(rawName || '').trim();
+      if (!name) return false;
+      const list = role === 'teacher' ? state.teachers : state.supervisors;
+      if (list.indexOf(name) === -1) {
+        list.push(name);
+        syncRosterSelectors();
+        postToGoogleSheet({ action: 'saveRosters', teachers: state.teachers, supervisors: state.supervisors });
+      }
+      return true;
+    }
+
+    function handleAdminAddRoster(role) {
+      const inputId = role === 'teacher' ? 'adminTeacherInput' : 'adminSupervisorInput';
+      const inp = document.getElementById(inputId);
+      const name = inp.value.trim();
+      if (!name) {
+        showFeedback('error', 'กรุณากรอกชื่อ-สกุลก่อน');
+        return;
+      }
+      addRosterName(role, name);
+      inp.value = '';
+      showFeedback('success', 'เพิ่มรายชื่อ "' + name + '" เรียบร้อยแล้ว');
+    }
+
+    function handleRosterFileUpload(event, role) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = String(e.target.result || '');
+        const lines = text.split(/\r?\n/).map(function (line) { return line.split(',')[0].trim(); }).filter(Boolean);
+        let added = 0;
+        const targetList = role === 'teacher' ? state.teachers : state.supervisors;
+        lines.forEach(function (name) {
+          if (name === 'ชื่อ-สกุล' || name === 'name') return;
+          if (targetList.indexOf(name) === -1) {
+            targetList.push(name);
+            added++;
+          }
+        });
+        syncRosterSelectors();
+        postToGoogleSheet({ action: 'saveRosters', teachers: state.teachers, supervisors: state.supervisors });
+        showFeedback('success', 'อัปโหลดไฟล์สำเร็จ เพิ่มรายชื่อใหม่ ' + added + ' รายการ');
+        event.target.value = '';
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function removeRosterPerson(role, name) {
+      if (state.mode !== 'admin') return;
+      const label = role === 'teacher' ? 'ครูคณิต' : 'ครูผู้นิเทศ';
+      const relatedCount = state.schedules.filter(function (item) {
+        return role === 'teacher' ? item.fullName === name : item.supervisor === name;
+      }).length;
+      const warnExtra = relatedCount > 0 ? '\n(หมายเหตุ: รายชื่อนี้ยังมีรายการนิเทศในตาราง ' + relatedCount + ' รายการ)' : '';
+      if (!confirm('ยืนยันการลบชื่อ' + label + ' "' + name + '"?' + warnExtra)) return;
+
+      if (role === 'teacher') {
+        state.teachers = state.teachers.filter(function (n) { return n !== name; });
+      } else {
+        state.supervisors = state.supervisors.filter(function (n) { return n !== name; });
+      }
+      syncRosterSelectors();
+      postToGoogleSheet({ action: 'saveRosters', teachers: state.teachers, supervisors: state.supervisors });
+      showFeedback('success', 'ลบชื่อ' + label + ' "' + name + '" เรียบร้อยแล้ว');
+    }
+
+    function syncRosterSelectors() {
+      const entryTeacherSel = document.getElementById('entryTeacherSelect');
+      const entrySupSel = document.getElementById('entrySupervisorSelect');
+      const filterSupSel = document.getElementById('filterSupervisorSelect');
+
+      const prevTeacher = entryTeacherSel.value;
+      entryTeacherSel.innerHTML = ['<option value="">-- เลือกชื่อครูคณิต --</option>'].concat(
+        state.teachers.map(function (t) { return '<option value="' + escapeHtml(t) + '">' + escapeHtml(t) + '</option>'; })
+      ).join('');
+      if (prevTeacher && state.teachers.indexOf(prevTeacher) !== -1) entryTeacherSel.value = prevTeacher;
+
+      const prevSup = entrySupSel.value;
+      entrySupSel.innerHTML = ['<option value="">-- เลือกครูผู้นิเทศ --</option>'].concat(
+        state.supervisors.map(function (s) { return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>'; })
+      ).join('');
+      if (prevSup && state.supervisors.indexOf(prevSup) !== -1) entrySupSel.value = prevSup;
+
+      const currentFilter = filterSupSel.value;
+      filterSupSel.innerHTML = '<option value="">ครูผู้นิเทศทั้งหมด</option>' +
+        state.supervisors.map(function (s) { return '<option value="' + escapeHtml(s) + '">' + escapeHtml(s) + '</option>'; }).join('');
+      filterSupSel.value = currentFilter;
+
+      document.getElementById('adminTeacherCount').textContent = state.teachers.length;
+      document.getElementById('adminSupervisorCount').textContent = state.supervisors.length;
+
+      document.getElementById('adminTeacherList').innerHTML = state.teachers.length
+        ? state.teachers.map(function (t, i) {
+            return '<div class="roster-item"><span>' + escapeHtml(t) + '</span><button type="button" class="danger sm" data-del-teacher="' + i + '">ลบ</button></div>';
+          }).join('')
+        : '<div class="roster-empty">ยังไม่มีรายชื่อครูคณิต</div>';
+
+      document.getElementById('adminSupervisorList').innerHTML = state.supervisors.length
+        ? state.supervisors.map(function (s, i) {
+            return '<div class="roster-item"><span>' + escapeHtml(s) + '</span><button type="button" class="danger sm" data-del-sup="' + i + '">ลบ</button></div>';
+          }).join('')
+        : '<div class="roster-empty">ยังไม่มีรายชื่อครูผู้นิเทศ</div>';
+    }
+
+    function syncTableTitleUI() {
+      document.getElementById('tableDisplayTitle').textContent = state.tableTitle;
+      document.getElementById('adminTableTitleInput').value = state.tableTitle;
+    }
+
+    function startInlineTitleEdit() {
+      if (state.mode !== 'admin') return;
+      document.getElementById('inlineTitleInput').value = state.tableTitle;
+      document.getElementById('tableDisplayBox').classList.add('hidden');
+      document.getElementById('inlineEditTitleBox').classList.remove('hidden');
+      document.getElementById('inlineTitleInput').focus();
+    }
+
+    function cancelInlineTitleEdit() {
+      document.getElementById('inlineEditTitleBox').classList.add('hidden');
+      document.getElementById('tableDisplayBox').classList.remove('hidden');
+    }
+
+    function saveInlineTitleEdit() {
+      const val = document.getElementById('inlineTitleInput').value.trim();
+      if (!val) return;
+      state.tableTitle = val;
+      syncTableTitleUI();
+      cancelInlineTitleEdit();
+      postToGoogleSheet({ action: 'saveTitle', tableTitle: state.tableTitle });
+      showFeedback('success', 'อัปเดตหัวตารางเรียบร้อยแล้ว');
+    }
+
+    function saveTableTitleFromAdmin() {
+      const val = document.
