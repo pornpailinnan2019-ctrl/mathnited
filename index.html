@@ -33,6 +33,8 @@
       max-width: 1240px;
       margin: 0 auto;
       padding: 20px;
+      position: relative;
+      z-index: 1;
     }
     .topbar {
       background: var(--card);
@@ -46,6 +48,8 @@
       gap: 12px;
       margin-bottom: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+      z-index: 10;
     }
     .brand h1 {
       margin: 0;
@@ -62,6 +66,8 @@
       flex-wrap: wrap;
       align-items: center;
       gap: 8px;
+      position: relative;
+      z-index: 20;
     }
     .badge {
       padding: 6px 12px;
@@ -78,6 +84,7 @@
     button, input, select {
       font-family: inherit;
       font-size: 0.95rem;
+      position: relative;
     }
     button {
       cursor: pointer;
@@ -87,6 +94,7 @@
       padding: 8px 14px;
       border-radius: 8px;
       transition: 0.15s ease;
+      pointer-events: auto;
     }
     button:hover { background: #f8fafc; }
     button.primary {
@@ -124,6 +132,7 @@
       color: var(--text);
       width: 100%;
       min-height: 40px;
+      pointer-events: auto;
     }
     .card {
       background: var(--card);
@@ -132,6 +141,8 @@
       padding: 18px 20px;
       margin-bottom: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
+      z-index: 5;
     }
     .card-title {
       margin: 0 0 14px;
@@ -310,6 +321,8 @@
       width: 100%;
       max-width: 380px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 100000;
     }
     .modal h3 { margin: 0 0 8px; }
     .modal p { margin: 0 0 12px; font-size: 0.88rem; color: var(--muted); }
@@ -414,117 +427,4 @@
           <button type="button" class="primary" id="saveTeacherScheduleBtn">บันทึกลงตารางนิเทศ</button>
         </div>
       </div>
-      <div id="clashAlert" class="alert warn"></div>
-    </section>
-
-    <!-- โหมดแอดมิน -->
-    <section id="adminPanel" class="card hidden">
-      <h2 class="card-title">
-        <span>โหมดแอดมิน - เพิ่ม/ลบรายชื่อครูคณิต ผู้นิเทศ และแก้ไขหัวตาราง</span>
-        <button type="button" class="secondary" id="syncAllBtn">ซิงก์ข้อมูลทั้งหมดขึ้น Google Sheets</button>
-      </h2>
-
-      <div class="grid-admin-rosters" style="margin-bottom:14px;">
-        <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#f8fafc;">
-          <div style="font-weight:700; margin-bottom:8px;">รายชื่อครูคณิต (<span id="adminTeacherCount">0</span> คน)</div>
-          <div style="display:flex; gap:6px; margin-bottom:8px;">
-            <input type="text" id="adminTeacherInput" placeholder="พิมพ์ชื่อ-สกุลครูคณิต" />
-            <button type="button" class="primary" id="adminAddTeacherBtn">เพิ่ม</button>
-          </div>
-          <input type="file" id="adminTeacherFileInput" accept=".csv,.txt" />
-          <div id="adminTeacherList" class="roster-list"></div>
-        </div>
-
-        <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#f8fafc;">
-          <div style="font-weight:700; margin-bottom:8px;">รายชื่อครูผู้นิเทศ (<span id="adminSupervisorCount">0</span> คน)</div>
-          <div style="display:flex; gap:6px; margin-bottom:8px;">
-            <input type="text" id="adminSupervisorInput" placeholder="พิมพ์ชื่อ-สกุลครูผู้นิเทศ" />
-            <button type="button" class="primary" id="adminAddSupervisorBtn">เพิ่ม</button>
-          </div>
-          <div id="adminSupervisorList" class="roster-list"></div>
-        </div>
-      </div>
-
-      <div style="border:1px solid #e2e8f0; border-radius:10px; padding:12px; background:#f8fafc;">
-        <div style="font-weight:700; margin-bottom:8px;">แก้ไขหัวตารางนิเทศ</div>
-        <div style="display:flex; flex-wrap:wrap; gap:8px;">
-          <input type="text" id="adminTableTitleInput" style="flex:1; min-width:260px;" />
-          <button type="button" class="primary" id="saveAdminTitleBtn">บันทึกหัวตาราง</button>
-          <button type="button" id="resetAdminTitleBtn">คืนค่าหัวตารางเริ่มต้น</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ตารางนิเทศหลัก -->
-    <section class="card">
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <input type="text" id="searchInput" placeholder="ค้นหาชื่อครู วัน/เดือน/ปี ห้อง หรือผู้นิเทศ..." style="width:260px;" />
-          <select id="filterSupervisorSelect" style="width:210px;">
-            <option value="">ครูผู้นิเทศทั้งหมด</option>
-          </select>
-        </div>
-        <div class="toolbar-right">
-          <button type="button" class="primary" id="exportExcelBtn">ส่งออกไฟล์ Excel (.xls)</button>
-          <button type="button" id="exportCsvBtn">ส่งออกไฟล์ CSV</button>
-          <button type="button" id="printTableBtn">พิมพ์ตาราง</button>
-        </div>
-      </div>
-
-      <div class="table-header-wrap">
-        <div id="tableDisplayBox" class="table-title-display">
-          <h2 id="tableDisplayTitle">ตารางนิเทศการสอนครั้งที่ 1 (15 มิถุนายน 2569 - 24 กรกฎาคม 2569)</h2>
-          <button type="button" id="inlineEditTitleBtn" class="hidden">แก้ไขหัวตาราง</button>
-        </div>
-        <div id="inlineEditTitleBox" class="inline-edit-row hidden" style="justify-content:center; margin-top:6px;">
-          <input type="text" id="inlineTitleInput" />
-          <button type="button" class="primary" id="saveInlineTitleBtn">บันทึก</button>
-          <button type="button" id="cancelInlineTitleBtn">ยกเลิก</button>
-        </div>
-        <p id="tableSummaryMeta" class="table-sub"></p>
-      </div>
-
-      <div class="table-wrap">
-        <table id="supervisionTable">
-          <thead>
-            <tr>
-              <th style="width:60px;">ที่</th>
-              <th colspan="2">ชื่อ-สกุล</th>
-              <th style="width:170px;">วัน/เดือน/ปี</th>
-              <th style="width:90px;">คาบ</th>
-              <th style="width:130px;">ชั้น</th>
-              <th style="width:110px;">ห้อง</th>
-              <th>ครูผู้นิเทศ</th>
-              <th id="actionColHeader" class="hidden" style="width:100px;">จัดการ</th>
-            </tr>
-          </thead>
-          <tbody id="supervisionTableBody"></tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-
-  <!-- Modal กรอกรหัสผ่าน -->
-  <div id="authModal" class="modal-backdrop">
-    <div class="modal">
-      <h3 id="authModalTitle">เข้าสู่ระบบ</h3>
-      <p id="authModalDesc">กรุณากรอกรหัสผ่านเพื่อเข้าใช้งาน</p>
-      <input type="password" id="authPasscodeInput" placeholder="กรอกรหัสผ่าน..." />
-      <div id="authErrorMsg" class="alert error"></div>
-      <div class="modal-actions">
-        <button type="button" id="cancelAuthBtn">ยกเลิก</button>
-        <button type="button" class="primary" id="confirmAuthBtn">ยืนยัน</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwi5OEscQmM1NGP2eY9fhK28JpHJk0bgJu5qqxU6Q0YqU7JDaj_o3b7RvVa1oIOeQCu-Q/exec';
-    const MODE_PASSCODES = { teacher: 'math1234', admin: 'adminmath' };
-    const DEFAULT_TABLE_TITLE = 'ตารางนิเทศการสอนครั้งที่ 1 (15 มิถุนายน 2569 - 24 กรกฎาคม 2569)';
-    const THAI_MONTHS = ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
-    const EN_MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
-
-    const INITIAL_SCHEDULES = [
-      { id: '1', fullName: 'นายสุขชัย เฉลิมผลวงศ์กุล', firstName: 'นายสุขชัย', lastName: 'เฉลิมผลวงศ์กุล', dateIso: '2026-07-16', dateThai: '16 กรกฎาคม 2569', period: '1-2', grade: 'ม.6', room: '213', supervisor: 'นางอำภา ธนะปาน' },
-      { id: '2', fullName: 'นายสมชาย ซอแอ', firstName: 'นายสมชาย', lastName: 'ซอแอ', dateIso: '2026-06-25', dateThai: '2
+      <div id="clashAlert" class="alert warn
